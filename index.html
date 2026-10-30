@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Subtil Creator Pro</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Subtil">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F2F2F7">
+
+  <style>
+    :root {
+      color-scheme: light;
+      --ios-blue: #007AFF;
+      --ios-red: #FF3B30;
+      --ios-green: #34C759;
+      --ios-gray-bg: #F2F2F7;
+      --ios-card-bg: #FFFFFF;
+      --text-main: #000000;
+      --text-sub: #6E6E73;
+      --border-color: #E5E5EA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--ios-gray-bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      user-select: none;
+    }
+
+    header {
+      background-color: var(--ios-card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; color: #000; }
+    .brand-icon { width: 32px; height: 32px; background: var(--ios-blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+
+    .header-btns { display: flex; gap: 8px; }
+    .btn { padding: 6px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 5px; transition: transform 0.1s; touch-action: manipulation; }
+    .btn:active { transform: scale(0.95); }
+    .btn-red { background: rgba(255,59,48,0.1); color: var(--ios-red); }
+    .btn-blue { background: var(--ios-blue); color: white; }
+
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
+    @media (min-width: 768px) {
+      main { flex-direction: row; }
+    }
+
+    aside {
+      width: 100%;
+      max-width: 440px;
+      background: var(--ios-card-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--ios-gray-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-title { font-size: 12px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    label { font-size: 12px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 4px; }
+    input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--ios-card-bg);
+      color: var(--text-main);
+      font-size: 16px;
+      outline: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+    input:focus, textarea:focus { border-color: var(--ios-blue); }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .range-group { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    input[type="range"] { width: 100%; accent-color: var(--ios-blue); cursor: pointer; touch-action: pan-y; }
+
+    .segmented { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--border-color); padding: 2px; border-radius: 10px; }
+    .seg-btn { background: transparent; border: none; padding: 6px; font-size: 12px; font-weight: 600; color: var(--text-sub); border-radius: 8px; cursor: pointer; text-align: center; touch-action: manipulation; }
+    .seg-btn.active { background: var(--ios-card-bg); color: var(--ios-blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+    .elements-list { max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .element-row { display: flex; align-items: center; gap: 8px; background: var(--ios-card-bg); padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border-color); }
+
+    canvas-area {
+      flex-grow: 1;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .preview-header { width: 100%; max-width: 800px; text-align: left; }
+    .preview-title { font-size: 22px; font-weight: 800; color: #000000; }
+    .preview-sub { font-size: 13px; color: var(--text-sub); }
+
+    .dial-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 0; min-height: 320px; transform: translateY(-12px); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">❖</div>
+      <span>Subtil Creator</span>
+    </div>
+    <div class="header-btns">
+      <button type="button" class="btn btn-red" onclick="clearAll()">Cancella</button>
+      <button type="button" class="btn btn-blue" onclick="exportAsPNG()">Download</button>
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <!-- Dettagli -->
+      <div class="card">
+        <div class="card-title">Dettagli del quadrante</div>
+        <div>
+          <label>Titolo :</label>
+          <input type="text" id="input-title" oninput="updateDialState()" placeholder="Inserisci titolo">
+        </div>
+        <div>
+          <label>Descrizione :</label>
+          <textarea id="input-description" oninput="updateDialState()" rows="2" placeholder="Una descrizione per tuo quadrante"></textarea>
+        </div>
+        <div>
+          <div class="range-group">
+            <label>Angolo :</label>
+            <span id="label-angle" style="color:var(--ios-blue); font-weight:700;">180°</span>
+          </div>
+          <input type="range" id="input-angle" min="30" max="360" step="1" value="180" oninput="updateDialState()">
+        </div>
+        <div>
+          <label>Orientamento Testo :</label>
+          <div class="segmented">
+            <button type="button" class="seg-btn active" id="btn-text-radial" onclick="setTextOrientation('radial')">Radiale</button>
+            <button type="button" class="seg-btn" id="btn-text-horizontal" onclick="setTextOrientation('horizontal')">Orizzontale</button>
+            <button type="button" class="seg-btn" id="btn-text-vertical" onclick="setTextOrientation('vertical')">Verticale</button>
+          </div>
+        </div>
+        <div>
+          <label>Dimensione e colore del bordo :</label>
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="input-border-size" min="1" max="25" value="2" oninput="updateDialState()" style="width:70px; text-align:center;">
+            <input type="color" id="input-border-color" value="#000000" onchange="updateDialState()" style="width:40px; height:38px; border:none; background:none; cursor:pointer;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Elementi -->
+      <div class="card">
+        <div class="card-title">Gruppo Elementi</div>
+        <div style="display:flex; align-items:center; background:var(--ios-card-bg); padding:8px 12px; border-radius:10px; border:1px solid var(--border-color);">
+          <button type="button" class="btn" style="background:var(--ios-gray-bg); width:44px; height:44px; justify-content:center;" onclick="decrementCount()">-</button>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; color:var(--text-sub);">Spicchi:</span>
+            <input type="number" id="input-elements-count" min="1" max="100" value="4" onchange="setElementsCount(this.value)" style="width:50px; text-align:center; font-weight:700;">
+          </div>
+          <button type="button" class="btn" style="background:var(--ios-gray-bg); width:44px; height:44px; justify-content:center;" onclick="incrementCount()">+</button>
+        </div>
+        <div class="elements-list" id="elements-list-container"></div>
+      </div>
+    </aside>
+
+    <canvas-area>
+      <div class="preview-header">
+        <div class="preview-title" id="preview-title"></div>
+        <div class="preview-sub" id="preview-subtitle"> </div>
+      </div>
+
+      <div class="dial-container" id="dial-svg-container"></div>
+
+      <div style="width:100%; max-width:800px; text-align:right; font-size:12px; color:var(--text-sub);"></div>
+    </canvas-area>
+  </main>
+
+  <script>
+    let subtilData = {
+      title: "",
+      description: "",
+      angle: 180,
+      textOrientation: 'radial',
+      borderSize: 2,
+      borderColor: "#000000",
+      elements: [
+        { name: "Elementi 1", color: "#FFFFFF" },
+        { name: "Elementi 2", color: "#FFFFFF" },
+        { name: "Elementi 3", color: "#FFFFFF" },
+        { name: "Elementi 4", color: "#FFFFFF" }
+      ]
+    };
+
+    window.onload = function() {
+      renderElementsEditor();
+      renderSubtilSVG();
+    };
+
+    function updateDialState() {
+      subtilData.title = document.getElementById('input-title').value;
+      subtilData.description = document.getElementById('input-description').value;
+      subtilData.angle = parseInt(document.getElementById('input-angle').value);
+      subtilData.borderSize = parseInt(document.getElementById('input-border-size').value) || 1;
+      subtilData.borderColor = document.getElementById('input-border-color').value;
+
+      document.getElementById('label-angle').innerText = subtilData.angle + "°";
+      document.getElementById('preview-title').innerText = subtilData.title || "Inserisci titolo";
+      document.getElementById('preview-subtitle').innerText = subtilData.description || " ";
+
+      renderSubtilSVG();
+    }
+
+    function setTextOrientation(mode) {
+      subtilData.textOrientation = mode;
+      ['radial', 'horizontal', 'vertical'].forEach(m => {
+        const btn = document.getElementById('btn-text-' + m);
+        if (m === mode) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderSubtilSVG();
+    }
+
+    function setElementsCount(val) {
+      let count = parseInt(val);
+      if (isNaN(count) || count < 1) count = 1;
+      if (count > 100) count = 100;
+
+      document.getElementById('input-elements-count').value = count;
+
+      while (subtilData.elements.length < count) {
+        subtilData.elements.push({ name: "Elementi " + (subtilData.elements.length + 1), color: "#FFFFFF" });
+      }
+      while (subtilData.elements.length > count) {
+        subtilData.elements.pop();
+      }
+
+      renderElementsEditor();
+      renderSubtilSVG();
+    }
+
+    function renderSubtilSVG() {
+      const container = document.getElementById('dial-svg-container');
+      const defaultLineColor = '#000000';
+
+      const angle = subtilData.angle;
+      let width = 600, height = 600, cx = 300, cy = 300, r = 260, innerCutoutR = 40;
+
+      if (angle <= 180) { height = 360; cy = 320; }
+      else if (angle <= 270) { height = 500; cy = 280; }
+
+      const numSectors = subtilData.elements.length;
+      if (numSectors === 0) { container.innerHTML = ""; return; }
+
+      const stepAngle = angle / numSectors;
+      const startAngleOffset = angle <= 180 ? 180 + (180 - angle)/2 : 270 - (angle/2);
+
+      let svgPaths = "";
+
+      subtilData.elements.forEach((elem, i) => {
+        const startA = startAngleOffset + (i * stepAngle);
+        const endA = startA + stepAngle;
+
+        const rad1 = (startA * Math.PI) / 180;
+        const rad2 = (endA * Math.PI) / 180;
+
+        const x1 = cx + r * Math.cos(rad1);
+        const y1 = cy + r * Math.sin(rad1);
+        const x2 = cx + r * Math.cos(rad2);
+        const y2 = cy + r * Math.sin(rad2);
+
+        const x1_in = cx + innerCutoutR * Math.cos(rad1);
+        const y1_in = cy + innerCutoutR * Math.sin(rad1);
+        const x2_in = cx + innerCutoutR * Math.cos(rad2);
+        const y2_in = cy + innerCutoutR * Math.sin(rad2);
+
+        const largeArc = stepAngle > 180 ? 1 : 0;
+        const pathData = `M ${x1_in} ${y1_in} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} L ${x2_in} ${y2_in} A ${innerCutoutR} ${innerCutoutR} 0 ${largeArc} 0 ${x1_in} ${y1_in} Z`;
+        const fill = elem.color && elem.color !== "#FFFFFF" ? elem.color : "none";
+
+        const midA = startA + (stepAngle / 2);
+        const midRad = (midA * Math.PI) / 180;
+        const textDist = innerCutoutR + (r - innerCutoutR) * 0.6;
+        const tx = cx + textDist * Math.cos(midRad);
+        const ty = cy + textDist * Math.sin(midRad);
+
+        let textTransform = "";
+        if (subtilData.textOrientation === 'radial') {
+           let textRotate = midA - 270;
+           if (textRotate < -180) textRotate += 360;
+           textTransform = `transform="translate(${tx}, ${ty}) rotate(${textRotate})"`;
+        } else if (subtilData.textOrientation === 'vertical') {
+           let textRotate = midA;
+           if (textRotate > 90 && textRotate < 270) textRotate -= 180;
+           textTransform = `transform="translate(${tx}, ${ty}) rotate(${textRotate})"`;
+        } else {
+           textTransform = `transform="translate(${tx}, ${ty})"`;
+        }
+
+        svgPaths += `
+          <path d="${pathData}" fill="${fill}" stroke="${defaultLineColor}" stroke-width="1.5" />
+          <g ${textTransform}>
+            <text x="0" y="0" fill="#000000" font-size="13" font-weight="600" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, sans-serif">${elem.name}</text>
+          </g>
+        `;
+      });
+
+      const radStart = (startAngleOffset * Math.PI) / 180;
+      const radEnd = ((startAngleOffset + angle) * Math.PI) / 180;
+      const bx1 = cx + r * Math.cos(radStart);
+      const by1 = cy + r * Math.sin(radStart);
+      const bx2 = cx + r * Math.cos(radEnd);
+      const by2 = cy + r * Math.sin(radEnd);
+      const largeArcTotal = angle > 180 ? 1 : 0;
+
+      const outerArcPath = `M ${bx1} ${by1} A ${r} ${r} 0 ${largeArcTotal} 1 ${bx2} ${by2}`;
+
+      const svgContent = `
+        <svg id="subtil-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; max-width:100%; overflow:visible;">
+          <g>${svgPaths}</g>
+          <path d="${outerArcPath}" fill="none" stroke="${subtilData.borderColor}" stroke-width="${subtilData.borderSize}" stroke-linecap="round" />
+        </svg>
+      `;
+
+      container.innerHTML = svgContent;
+    }
+
+    function renderElementsEditor() {
+      const container = document.getElementById('elements-list-container');
+      container.innerHTML = "";
+
+      subtilData.elements.forEach((elem, idx) => {
+        const row = document.createElement('div');
+        row.className = "element-row";
+        row.innerHTML = `
+          <span style="font-size:11px; color:var(--text-sub); width:20px; font-family:monospace;">${idx + 1}</span>
+          <input type="text" oninput="updateElementName(${idx}, this.value)" value="${elem.name}" style="flex-grow:1;">
+          <input type="color" onchange="updateElementColor(${idx}, this.value)" value="${elem.color || '#FFFFFF'}" style="width:30px; height:30px; border:none; background:none; cursor:pointer;">
+          <button onclick="removeElement(${idx})" style="background:none; border:none; color:var(--ios-red); font-weight:bold; cursor:pointer; padding:4px;">✕</button>
+        `;
+        container.html ? null : container.appendChild(row);
+      });
+
+      document.getElementById('input-elements-count').value = subtilData.elements.length;
+    }
+
+    function updateElementName(idx, val) { subtilData.elements[idx].name = val; renderSubtilSVG(); }
+    function updateElementColor(idx, val) { subtilData.elements[idx].color = val; renderSubtilSVG(); }
+
+    function removeElement(idx) {
+      if (subtilData.elements.length > 1) {
+        subtilData.elements.splice(idx, 1);
+        renderElementsEditor();
+        renderSubtilSVG();
+      }
+    }
+
+    function incrementCount() { setElementsCount(subtilData.elements.length + 1); }
+    function decrementCount() { if (subtilData.elements.length > 1) setElementsCount(subtilData.elements.length - 1); }
+
+    function clearAll() {
+      subtilData.title = "";
+      subtilData.description = "";
+      subtilData.elements = [{ name: "Elementi 1", color: "#FFFFFF" }, { name: "Elementi 2", color: "#FFFFFF" }];
+      document.getElementById('input-title').value = "";
+      document.getElementById('input-description').value = "";
+      renderElementsEditor();
+      updateDialState();
+    }
+
+    function openExportSheet() { document.getElementById('export-sheet').classList.add('open'); }
+    function closeExportSheet() { document.getElementById('export-sheet').classList.remove('open'); }
+
+    function exportAsSVG() {
+      const svg = document.getElementById('dial-svg-container').innerHTML;
+      const blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = (subtilData.title || "quadrante").toLowerCase().replace(/\s+/g, "_") + "_subtil.svg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      closeExportSheet();
+    }
+
+    async function saveFile(filename, blob) {
+      try {
+        if (window.claude && window.claude.use) {
+          const dl = await window.claude.use("downloads");
+          if (dl) { await dl.save({ filename: filename, data: blob }); return; }
+        }
+      } catch (err) {
+        if (err && err.code === 'declined') return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportAsPNG() {
+      const svgElement = document.getElementById('subtil-svg');
+      const svgString = new XMLSerializer().serializeToString(svgElement);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      canvas.width = 1400;
+      canvas.height = subtilData.angle <= 180 ? 900 : 1400;
+
+      const vb = svgElement.viewBox && svgElement.viewBox.baseVal;
+      if (vb) { img.width = vb.width; img.height = vb.height; }
+
+      img.onload = function() {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const srcW = (vb && vb.width) || 600;
+        const srcH = (vb && vb.height) || 600;
+        ctx.drawImage(img, 0, 0, srcW, srcH, 0, 0, canvas.width, canvas.height);
+        const name = (subtilData.title || "quadrante").toLowerCase().replace(/\s+/g, "_") + "_subtil.png";
+        canvas.toBlob(function(blob) { if (blob) saveFile(name, blob); }, "image/png");
+      };
+
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+    }
+  </script>
+</body>
+</html>
